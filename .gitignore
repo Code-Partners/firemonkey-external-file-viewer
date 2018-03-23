@@ -1,0 +1,12 @@
+*.local
+*.res
+*.stat
+*.identcache
+*.hpp
+
+Debug/
+Release/
+
+__history/
+__recovery/
+__astcache/
