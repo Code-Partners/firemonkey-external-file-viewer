@@ -1,0 +1,64 @@
+object Form5: TForm5
+  Left = 0
+  Top = 0
+  Caption = 'Form5'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object Layout1: TLayout
+    Align = Top
+    Margins.Top = 40.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 640.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object Button1: TButton
+      Align = Center
+      Size.Width = 222.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Open embedded PDF'
+      OnClick = Button1Click
+    end
+  end
+  object Layout2: TLayout
+    Align = Top
+    Position.Y = 90.000000000000000000
+    Size.Width = 640.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object Button2: TButton
+      Align = Center
+      Size.Width = 222.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Open PDF by URL'
+      OnClick = Button2Click
+    end
+  end
+  object Layout3: TLayout
+    Align = Top
+    Position.Y = 140.000000000000000000
+    Size.Width = 640.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Button3: TButton
+      Align = Center
+      Size.Width = 222.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Open image by URL'
+      OnClick = Button3Click
+    end
+  end
+end
