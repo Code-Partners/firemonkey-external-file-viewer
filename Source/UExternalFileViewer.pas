@@ -18,13 +18,20 @@ type
     procedure OpenURL(URL: string); virtual; abstract;
   end;
 
+  TDummyExternalFileViewer = class (TExternalFileViewer)
+  public
+    procedure OpenFile(Path: string); override;
+    procedure OpenURL(URL: string); override;
+  end;
+
 implementation
 
-uses
   {$IF DEFINED(ANDROID)}
-    UExternalFileViewer.Android;
+    uses
+      UExternalFileViewer.Android;
   {$ELSEIF DEFINED(IOS)}
-    UExternalFileViewer.iOS;
+    uses
+      UExternalFileViewer.iOS;
   {$ENDIF}
 
 { TExternalFileViewer }
@@ -42,7 +49,21 @@ begin
     Result := TAndroidExternalFileViewer.Create(AOwner, AForm);
   {$ELSEIF DEFINED(IOS)}
     Result := TiOSExternalFileViewer.Create(AOwner, AForm);
+  {$ELSE}
+    Result := TDummyExternalFileViewer.Create(AOwner, AForm);
   {$ENDIF}
+end;
+
+{ TDummyExternalFileViewer }
+
+procedure TDummyExternalFileViewer.OpenFile(Path: string);
+begin
+
+end;
+
+procedure TDummyExternalFileViewer.OpenURL(URL: string);
+begin
+
 end;
 
 end.

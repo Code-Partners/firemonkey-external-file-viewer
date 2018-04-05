@@ -39,6 +39,7 @@ end;
 
 procedure TForm5.Button1Click(Sender: TObject);
 begin
+  // open embedded PDF file
   self.FViewer.OpenFile(
     System.IOUtils.TPath.GetDocumentsPath() + PathDelim + 'svn-book.pdf'
   );
@@ -46,11 +47,13 @@ end;
 
 procedure TForm5.Button2Click(Sender: TObject);
 begin
+  // open remote PDF by URL
   self.FViewer.OpenURL('https://github.com/progit/progit2/releases/download/2.1.45/progit.pdf');
 end;
 
 procedure TForm5.Button3Click(Sender: TObject);
 begin
+  // open remote image by URL
   self.FViewer.OpenURL('https://git-scm.com/images/logo@2x.png');
 end;
 
