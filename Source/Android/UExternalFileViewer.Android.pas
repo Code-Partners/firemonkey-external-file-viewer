@@ -23,7 +23,8 @@ interface
 {$IFDEF ANDROID}
 
 uses
-  System.SysUtils, System.Classes, FMX.Forms, UExternalFileViewer, System.IOUtils,
+  System.SysUtils, System.Classes, FMX.Forms, FMX.ExternalFileViewer,
+  System.IOUtils,
   Androidapi.JNI.GraphicsContentViewText,
   Androidapi.JNIBridge,
   Androidapi.JNI.JavaTypes,
@@ -36,7 +37,7 @@ uses
   FMX.Helpers.Android;
 
 type
-  TAndroidExternalFileViewer = class (TExternalFileViewer)
+  TAndroidExternalFileViewer = class(TExternalFileViewer)
   private
     function GetMimeType(Uri: Jnet_Uri): JString;
   public
@@ -57,30 +58,18 @@ uses
 
 procedure TAndroidExternalFileViewer.OpenFile(Path: string);
 var
-  &OriginalFile, PublicDirectoryFile, PublicFile: JFile;
-  PublicDirectoryPath, PublicPath: string;
-
   Uri: Jnet_Uri;
   Intent: JIntent;
 begin
   inherited;
 
-  if Path.StartsWith(System.IOUtils.TPath.GetDocumentsPath()) then begin
-    &OriginalFile := TJFile.JavaClass.init(StringToJString(Path));
-
-    PublicDirectoryPath := (JStringToString(TJEnvironment.JavaClass.getExternalStorageDirectory.getAbsolutePath) + '/Documents');
-    PublicPath := PublicDirectoryPath + PathDelim + ExtractFileName(Path);    PublicDirectoryFile := TJFile.JavaClass.init(StringToJString(PublicDirectoryPath));    if (not PublicDirectoryFile.exists) then begin      PublicDirectoryFile.mkdir;    end;    if (not FileExists(PublicPath)) then      TFile.Copy(JStringToString(&OriginalFile.getAbsolutePath), PublicPath);
-    PublicFile := TJFile.JavaClass.init(StringToJString(PublicPath));
-  end
-  else begin
-    PublicFile := TJFile.JavaClass.init(StringToJString(Path));
-  end;
-
   Intent := TJIntent.JavaClass.init(TJIntent.JavaClass.ACTION_VIEW);
-  Uri := TJnet_Uri.JavaClass.fromFile(PublicFile);
-//  Intent.setDataAndType(Uri, StringToJString('application/pdf'));
+
+  Uri := TAndroidHelper.JFileToJURI
+    (TJFile.JavaClass.init(StringToJString(Path)));
+
   Intent.setDataAndType(Uri, self.GetMimeType(Uri));
-  Intent.setFlags(TJIntent.JavaClass.FLAG_ACTIVITY_NO_HISTORY);
+  Intent.setFlags(TJIntent.JavaClass.FLAG_GRANT_READ_URI_PERMISSION);
 
   TAndroidHelper.Activity.startActivity(Intent);
 end;
@@ -93,8 +82,6 @@ begin
   inherited;
 
   Intent := TJIntent.JavaClass.init(TJIntent.JavaClass.ACTION_VIEW);
-
-//  Intent.setDataAndType(TJnet_Uri.JavaClass.parse(StringToJString(URL)), StringToJString('application/pdf'));
 
   Uri := TJnet_Uri.JavaClass.parse(StringToJString(URL));
   Intent.setDataAndType(Uri, self.GetMimeType(Uri));
@@ -113,16 +100,18 @@ begin
   // https://stackoverflow.com/a/31691791/2899073
 
   MimeType := nil;
-  if (Uri.getScheme.equals(TJContentResolver.JavaClass.SCHEME_CONTENT)) then begin
+  if (Uri.getScheme.equals(TJContentResolver.JavaClass.SCHEME_CONTENT)) then
+  begin
     ContentResolver := TAndroidHelper.Context.getContentResolver();
-    MimeType := ContentResolver.getType(uri);
+    MimeType := ContentResolver.getType(Uri);
   end
-  else begin
-    FileExtension := TJMimeTypeMap.JavaClass.getFileExtensionFromUrl(uri.toString());
+  else
+  begin
+    FileExtension := TJMimeTypeMap.JavaClass.getFileExtensionFromUrl
+      (Uri.toString());
 
-    MimeType := TJMimeTypeMap.JavaClass.getSingleton().getMimeTypeFromExtension(
-      fileExtension.toLowerCase()
-    );
+    MimeType := TJMimeTypeMap.JavaClass.getSingleton().getMimeTypeFromExtension
+      (FileExtension.toLowerCase());
   end;
 
   Result := MimeType;
